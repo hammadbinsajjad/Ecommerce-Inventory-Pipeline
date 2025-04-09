@@ -1,3 +1,4 @@
 # dlt Data Load Tool
 dlt
-dlt[sqlalchemy]>=1.5.0
+dlt[sqlalchemy]
+dlt[bigquery]

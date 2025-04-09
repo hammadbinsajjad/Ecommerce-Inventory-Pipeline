@@ -6,7 +6,7 @@ from ingestion.sources.mistore import mistore_scraper
 def load_mistore():
     pipeline = dlt.pipeline(
         "mistore_pipeline",
-        destination="sqlalchemy",
+        destination="bigquery",
         dataset_name="mistore_products",
     )
 
