@@ -27,11 +27,6 @@ def mistore_scraper():
     yield from rest_api_resources(config)
 
 
-def lower_title(record):
-    record["title"] = record["title"].lower()
-    return record
-
-
 def remove_unwanted_attributes(raw_product):
     for attribute in UNWANTED_ATTRIBUTES:
         raw_product.pop(attribute)
