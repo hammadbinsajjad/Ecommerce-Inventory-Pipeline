@@ -1,4 +1,4 @@
-def shopify_config(base_url, write_disposition="replace", limit=250):
+def shopify_config(base_url, write_disposition="replace", limit=250, processing_steps=[]):
     return {
         "client": {
             "base_url": base_url,
@@ -20,6 +20,10 @@ def shopify_config(base_url, write_disposition="replace", limit=250):
             }
         },
         "resources": [
-            "products.json",
+            {
+                "name": "products.json",
+                "processing_steps": processing_steps
+            }
+
         ]
     }
