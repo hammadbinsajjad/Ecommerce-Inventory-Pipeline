@@ -20,3 +20,7 @@ secrets.toml
 
 # Sqlite being used for debugging
 *.sqlite
+
+
+# Service Accounts of GCP
+service-accounts/
