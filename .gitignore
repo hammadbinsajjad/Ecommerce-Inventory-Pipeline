@@ -24,3 +24,10 @@ secrets.toml
 
 # Service Accounts of GCP
 service-accounts/
+
+
+# dbt introduced gitignore
+
+target/
+dbt_packages/
+logs/
