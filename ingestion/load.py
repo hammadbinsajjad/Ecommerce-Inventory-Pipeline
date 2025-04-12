@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 
 from ingestion.utils.loader_map import loader_map
 from ingestion.utils.missing_loader import missing_loader
+from ingestion.utils.normalize_env_vars import normalize_environment_variables
 
 
 def main():
@@ -21,4 +22,5 @@ def init_argument_parser():
 
 
 if __name__ == "__main__":
+    normalize_environment_variables()
     main()
