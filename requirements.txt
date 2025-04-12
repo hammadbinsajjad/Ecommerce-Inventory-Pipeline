@@ -2,3 +2,4 @@
 dlt
 dlt[sqlalchemy]
 dlt[bigquery]
+google-cloud-bigquery-storage
