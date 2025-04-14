@@ -1,0 +1,7 @@
+sources:
+  - name: mistore_products
+    database: ecommerce-inventory-pipeline
+    schema: mistore_products
+    tables:
+      - name: products
+      - name: products__variants
