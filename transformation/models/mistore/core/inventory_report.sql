@@ -1,9 +1,9 @@
 {{ config(
         materialized = "table",
-        cluster_by = "in_stock",
+        cluster_by = "stock_status",
         partition_by = {
             "field": "publishing_month",
-            "data_type": "timestamp",
+            "data_type": "date",
             "granularity": "month",
         },
     ) 
