@@ -1,4 +1,13 @@
-{{ config(materialized = "table") }}
+{{ config(
+        materialized = "table",
+        cluster_by = "in_stock",
+        partition_by = {
+            "field": "publishing_month",
+            "data_type": "timestamp",
+            "granularity": "month",
+        },
+    ) 
+}}
 
 WITH products AS (
     SELECT *

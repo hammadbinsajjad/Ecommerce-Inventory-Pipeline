@@ -1,12 +1,4 @@
-{{ config(
-        materialized = "table",
-        cluster_by = "in_stock",
-        partition_by = {
-            "field": "publishing_month",
-            "data_type": "timestamp",
-        },
-    ) 
-}}
+{{ config(materialized = "table") }}
 
 WITH 
 
