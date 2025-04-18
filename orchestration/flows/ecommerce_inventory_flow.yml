@@ -1,0 +1,71 @@
+id: ecommerce-inventory-flow
+namespace: ecommerce-inventory
+
+inputs:
+  - id: store_key
+    type: STRING
+    defaults: "mistore"
+    displayName: "Store Key"
+
+tasks:
+  - id: ecommerce_inventory_pipeline
+    type: io.kestra.plugin.core.flow.WorkingDirectory
+    tasks:
+    - id: clone_project_repo
+      type: io.kestra.plugin.git.Clone
+      url: https://github.com/hammadbinsajjad/Ecommerce-Inventory-Pipeline
+      branch: main
+
+    - id: install_python_dependencies
+      type: io.kestra.plugin.scripts.python.Commands
+      taskRunner:
+        type: io.kestra.plugin.core.runner.Process
+      commands:
+        - export PATH="/home/kestra/.local/bin:$PATH"
+        - pip install uv > /dev/null
+        - uv venv 2> /dev/null
+        - uv pip install -r requirements.txt 2> /dev/null
+
+    - id: run_ingestion_script
+      type: io.kestra.plugin.scripts.python.Commands
+      taskRunner:
+        type: io.kestra.plugin.core.runner.Process
+      env:
+        DESTINATION__BIGQUERY__CREDENTIALS__PROJECT_ID: "{{ secret('BIGQUERY_PROJECT_ID') }}"
+        DESTINATION__BIGQUERY__CREDENTIALS__PRIVATE_KEY: "{{ secret('BIGQUERY_PRIVATE_KEY') }}"
+        DESTINATION__BIGQUERY__CREDENTIALS__CLIENT_EMAIL: "{{ secret('BIGQUERY_CLIENT_EMAIL')}}"
+      beforeCommands:
+        - . .venv/bin/activate
+      commands:
+        - python -m ingestion.load -l {{ inputs.store_key }}
+
+    - id: transformation_using_dbt
+      type: io.kestra.plugin.dbt.cli.DbtCLI
+      taskRunner:
+        type: io.kestra.plugin.core.runner.Process
+      projectDir: transformation
+      beforeCommands:
+        - . .venv/bin/activate
+      commands:
+        - dbt build --project-dir transformation --target production
+      profiles: |
+        default:
+          target: production
+          outputs:
+            production:
+              type: bigquery
+              method: service-account-json
+              project: {{ secret('BIGQUERY_PROJECT_ID') }}
+              dataset: mistore_products
+              keyfile_json:
+                type: service_account
+                project_id: "{{ secret('BIGQUERY_PROJECT_ID') }}"
+                private_key_id: "{{ secret('BIGQUERY_PRIVATE_KEY_ID') }}"
+                private_key: "{{ secret('BIGQUERY_PRIVATE_KEY') }}"
+                client_email: "{{ secret('BIGQUERY_CLIENT_EMAIL')}}"
+                client_id: "{{ secret('BIGQUERY_CLIENT_ID') }}"
+                auth_uri: https://accounts.google.com/o/oauth2/auth
+                token_uri: https://oauth2.googleapis.com/token
+                auth_provider_x509_cert_url: https://www.googleapis.com/oauth2/v1/certs
+                client_x509_cert_url: "{{ secret('BIGQUERY_CLIENT_CERT_URL') }}"
+
