@@ -3,3 +3,7 @@ dlt
 dlt[sqlalchemy]
 dlt[bigquery]
 google-cloud-bigquery-storage
+
+# dbt Data Build Tool
+dbt-core
+dbt-bigquery
