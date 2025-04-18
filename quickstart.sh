@@ -11,6 +11,8 @@ while IFS='=' read -r key value; do
   env_flags+=("-e" "$key=${!key}")
 done < .env
 
+cd orchestration
+
 docker build . -t ecom_inv_kestra
 
 # If the image is built, run it
