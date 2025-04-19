@@ -13,7 +13,7 @@ done < .env
 
 cd orchestration
 
-docker build . -t ecom_inv_kestra
+docker build . -f Dockerfile-local -t ecom_inv_kestra
 
 # If the image is built, run it
 if [ $? -eq 0 ]; then
