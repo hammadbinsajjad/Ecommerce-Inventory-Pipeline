@@ -31,3 +31,7 @@ service-accounts/
 target/
 dbt_packages/
 logs/
+
+
+# Kestra Config
+kestra_config.yml

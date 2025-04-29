@@ -63,7 +63,7 @@ This diagram illustrates the flow of data from extraction to visualisation, high
 
 To successfully run this project, ensure you have the following tools and services set up:
 
-- Google Cloud Platform (GCP) account with access to BigQuery and GCS
+- Google Cloud Platform (GCP) account with access to BigQuery
 - Docker is installed on your local machine
 - Proper authentication and access permissions to GCP services
 - Bash shell terminal (needed to use the quickstart.sh to spin up Kestra, can be used without it as well)
@@ -75,20 +75,51 @@ To successfully run this project, ensure you have the following tools and servic
 To run this project, follow these steps:
 
 1. **Set Up the Environment**:
-    - Create a `.env` file in the root directory of the project.
-    - Add the required fields from a service account with access to BigQuery. The `.env` file should include credentials and configuration details for GCP services.
+    - Create a `.env` file (refer to the `.example-env` for instructions) in the root directory of the project.
+
+2. **Configure Kestra**
+    - Create a `kestra_config.yml` file in the `orchestrator` folder. This file contains the configuration for the Kestra orchestrator. (Refer the to the `example-kestra_config.yml` for reference, you may use it as well to have a basic configuration.)
 
 2. **Start the Orchestrator**:
     - If you have a Bash terminal available, execute the `quickstart.sh` script:
       ```bash
       ./quickstart.sh
       ```
+
+      or
+
+      ```bash
+      bash quickstart.sh
+      ```
       This script will automate the setup and start the orchestrator (Kestra).
 
     - If a Bash terminal is not available, manually perform the steps in the `quickstart.sh` script:
-      - Build and run the Docker container to start the Kestra orchestrator, setting up the individual environment variables from the .env file.
+      - Setup each of the required environment variables in the `.env` file with the command:
+        ```bash
+        export VARIABLE_NAME=value
+        ```
+        Replace `VARIABLE_NAME` and `value` with the appropriate key-value pairs from the `.env` file.
 
-    - Run the flow named ecommerce_inventory_flow from the UI or through the API.
+      - Build and run the Docker container to start the Kestra orchestrator:
+
+        1. Change directory to the orchestrator folder:
+
+        ```bash
+        cd orchestrator
+        ```
+
+        2. Build the Docker image:
+        ```bash
+        docker build . -t ecom_inv_kestra
+        ```
+
+        3. Run the Docker container with the following command:
+
+        ```bash
+        docker run --rm -it --name ecom_inv_kestra -v $(pwd)/kestra_config.yml:/app/config/kestra_config.yml -p 8080:8080 ecom_inv_kestra
+        ```
+
+        Ensure the environment variables from the `.env` file are correctly loaded before running this command.
 
 3. **Run the Pipeline**:
     - Use the Kestra API or web interface to trigger the pipeline workflows.
@@ -96,15 +127,15 @@ To run this project, follow these steps:
 
 4. **Verify the Results**:
     - Check the BigQuery tables for the transformed data.
-    - Open [Looker Studio](https://lookerstudio.google.com/s/u6gGdCfOaag) to view the dashboards and analyse the insights.
+    - Open [Looker Studio](https://lookerstudio.google.com/s/u6gGdCfOaag) to view the dashboards and analyse the insights (more details about this below).
 
 ## Datasets
 
 ### Main Dataset:
-- **Source**: Product data from the ecommerce store's REST API (`https://mistore.pk/products.json`).
+- **Source**: Product data from the ecommerce store's REST API (i.e. scraping the site)(`https://mistore.pk/products.json`).
 - **Schema**:
-  - Product attributes (e.g., `id`, `title`, `product_type`)
-  - Variant attributes (e.g., `variant_id`, `available`, `price`)
+  - Product attributes (e.g. `id`, `title`, `product_type`)
+  - Variant attributes (e.g. `variant_id`, `available`, `price`)
 
 ---
 
@@ -114,7 +145,8 @@ To run this project, follow these steps:
 
 The first step involves extracting product data from the e-commerce store's REST API using the `dlt` library. The pipeline handles pagination and processes the data to remove unwanted attributes and add custom fields.
 
-- **Tools**: `dlt`, Python
+- **Tools**: `dlt`, `Python`
+
 - **Key Steps**:
   - Extract product data from the API.
   - Remove unnecessary attributes (e.g., `images`, `tags`).
@@ -122,6 +154,8 @@ The first step involves extracting product data from the e-commerce store's REST
 
 ### 2. Data Transformation & Analysis
 The extracted data is transformed using dbt to create clean and structured models for analysis. The transformation process includes:
+
+- **Tools**: `dbt`, `SQL`
 
 - **Staging Models**:
     - `stg_products`: Cleans and standardises product data.
@@ -131,9 +165,9 @@ The extracted data is transformed using dbt to create clean and structured model
     - `fact_products`: Combines product and variant data to create a fact table.
     - `inventory_report`: Aggregates product availability and trends. This model is partitioned by the `publising_month` field for efficient querying of per-month product additions and clustered by `stack_status` to improve the stock chart query.
 
-- **Tools**: dbt, SQL
-
 ### 3. Visualization & Insights
+
+- **Tools**: `Looker Studio`
 
 - **Final Report**: [Looker Studio Dashboard](https://lookerstudio.google.com/s/u6gGdCfOaag) showcasing the visualizations and insights.
 
@@ -142,6 +176,11 @@ The extracted data is transformed using dbt to create clean and structured model
   - **Category Trends**: Highlights popular product categories of the ecommerce store.
   - **Inventory Trends**: Analyses product addition trends by month.
 
+  ### Dashboard Preview
+
+  Below is a preview of the dashboard created in Looker Studio:
+
+  ![Dashboard Preview](./assets/images/dashboard.jpg)
 ---
 
 ## Conclusion & Acknowledgment

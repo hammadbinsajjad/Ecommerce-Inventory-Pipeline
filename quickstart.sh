@@ -13,14 +13,13 @@ done < .env
 
 cd orchestration
 
-docker build . -f Dockerfile-local -t ecom_inv_kestra
+docker build . -t ecom_inv_kestra
 
 # If the image is built, run it
 if [ $? -eq 0 ]; then
   docker run --rm -it \
     --name ecom_inv_kestra \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v /tmp:/tmp \
+    -v $(pwd)/kestra_config.yml:/app/config/kestra_config.yml \
     -p 8080:8080 \
     "${env_flags[@]}" \
     ecom_inv_kestra

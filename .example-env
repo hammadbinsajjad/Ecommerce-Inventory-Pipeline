@@ -1,0 +1,14 @@
+# All these are obtained from the service account with the following permissions
+
+# BigQuery Data Editor
+# BigQuery Job User
+# BigQuery Read Session User
+
+# All these need to be base64 encoded as well
+
+SECRET_BIGQUERY_PROJECT_ID=< base64 encoded project id >
+SECRET_BIGQUERY_PRIVATE_KEY=< base64 encoded private key >
+SECRET_BIGQUERY_PRIVATE_KEY_ID=< base64 encoded private key id >
+SECRET_BIGQUERY_CLIENT_EMAIL=< base64 encoded client email >
+SECRET_BIGQUERY_CLIENT_ID=< base64 encoded client id>
+SECRET_BIGQUERY_CLIENT_CERT_URL=< base64 encoded client cert url >
